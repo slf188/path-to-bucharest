@@ -1,24 +1,11 @@
 #ifndef ASTAR_H
 #define ASTAR_H
-#include <assert.h>
-#include <iostream>
-using namespace std;
-#include <algorithm>
-#include <cfloat>
-#include <vector>
 
 // fast fixed size memory allocator, used for fast node memory management
 #include "fsa.h"
 
-// Fixed size memory allocator can be disabled to compare performance
-// Uses std new and delete instead if you turn it off
-#define USE_FSA_MEMORY 1
-
 // disable warning that debugging information has lines that are truncated
 // occurs in stl headers
-#if defined(WIN32) && defined(_WINDOWS)
-#pragma warning(disable : 4786)
-#endif
 
 template <class T> class AStarState;
 
@@ -539,11 +526,7 @@ public: // methods
 
   int GetStepCount() { return m_Steps; }
 
-  void EnsureMemoryFreed() {
-#if USE_FSA_MEMORY
-    assert(m_AllocateNodeCount == 0);
-#endif
-  }
+  void EnsureMemoryFreed() {}
 
 private: // methods
   // This is called when a search fails or is cancelled to free all used
@@ -621,15 +604,6 @@ private: // methods
     m_AllocateNodeCount++;
     Node *p = new Node;
     return p;
-#else
-    Node *address = m_FixedSizeAllocator.alloc();
-
-    if (!address) {
-      return NULL;
-    }
-    m_AllocateNodeCount++;
-    Node *p = new (address) Node;
-    return p;
 #endif
   }
 
@@ -639,9 +613,6 @@ private: // methods
 
 #if !USE_FSA_MEMORY
     delete node;
-#else
-    node->~Node();
-    m_FixedSizeAllocator.free(node);
 #endif
   }
 
@@ -668,11 +639,6 @@ private: // data
   Node *m_Goal;
 
   Node *m_CurrentSolutionNode;
-
-#if USE_FSA_MEMORY
-  // Memory
-  FixedSizeAllocator<Node> m_FixedSizeAllocator;
-#endif
 
   // Debug : need to keep these two iterators around
   // for the user Dbg functions
