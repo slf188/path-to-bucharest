@@ -1,6 +1,4 @@
 #include "astar.h"
-#include <iostream>
-using namespace std;
 
 // por que en total existen 20 ciudades en la imagen
 const int MAX_CITIES = 20;
@@ -233,9 +231,17 @@ int main() {
   CityNames[Vaslui].assign("Vaslui");
   CityNames[Zerind].assign("Zerind");
 
-	// aqui es donde nosotros cambiamos desde cual es la ciudad de origen
-  ENUM_CITIES initCity = Neamt; // este es el nucleo del funcionamiento de nuestro programa
-	// muy importante
+  cout << "Bienvenido al programa de busqueda de camino a Bucarest" << endl;
+  cout << "Estas son las ciudades disponibles" << endl;
+  for (int i = 0; i < MAX_CITIES; i++) {
+    cout << " " << CityNames[i] << endl;
+  }
+
+  // aqui es donde nosotros cambiamos desde cual es la ciudad de origen
+  ENUM_CITIES initCity = Arad; // este es el nucleo del funcionamiento de
+  // nuestro programa muy importante
+
+  cout << "En este caso la ciudad de origen es " << CityNames[initCity] << endl;
 
   // An instance of A* search class
   AStarSearch<PathSearchNode> astarsearch;
@@ -261,47 +267,28 @@ int main() {
     do {
       SearchState = astarsearch.SearchStep();
       SearchSteps++;
+    } while (SearchState ==
+             AStarSearch<PathSearchNode>::SEARCH_STATE_SEARCHING);
 
-#if DEBUG_LISTS
-
-      cout << "Steps:" << SearchSteps << "\n";
-
-      int len = 0;
-
-      cout << "Open:\n";
-      PathSearchNode *p = astarsearch.GetOpenListStart();
-      while (p) {
-        len++;
-#endif
-      }
-      while (SearchState == AStarSearch<PathSearchNode>::SEARCH_STATE_SEARCHING)
-        ;
-
-      if (SearchState == AStarSearch<PathSearchNode>::SEARCH_STATE_SUCCEEDED) {
-        cout << "Search found the goal state\n";
-        PathSearchNode *node = astarsearch.GetSolutionStart();
-        cout << "Displaying solution\n";
-        int steps = 0;
+    if (SearchState == AStarSearch<PathSearchNode>::SEARCH_STATE_SUCCEEDED) {
+      cout << "Hemos encontrado una ruta\n";
+      PathSearchNode *node = astarsearch.GetSolutionStart();
+      cout << "Mostrando la solucion\n";
+      node->PrintNodeInfo();
+      for (;;) {
+        node = astarsearch.GetSolutionNext();
+        if (!node)
+          break;
         node->PrintNodeInfo();
-        for (;;) {
-          node = astarsearch.GetSolutionNext();
-          if (!node)
-            break;
-          node->PrintNodeInfo();
-          steps++;
-        };
-        cout << "Solution steps " << steps << endl;
-        // Once you're done with the solution you can free the nodes up
-        astarsearch.FreeSolutionNodes();
-      } else if (SearchState ==
-                 AStarSearch<PathSearchNode>::SEARCH_STATE_FAILED) {
-        cout << "Search terminated. Did not find goal state\n";
-      }
-      // Display the number of loops the search went through
-      cout << "SearchSteps : " << SearchSteps << "\n";
-      SearchCount++;
-      astarsearch.EnsureMemoryFreed();
+      };
+      // Once you're done with the solution you can free the nodes up
+      astarsearch.FreeSolutionNodes();
     }
-
-    return 0;
+    // Display the number of loops the search went through
+    cout << "Pasos a la solucion: " << SearchSteps - 1 << "\n";
+    SearchCount++;
+    astarsearch.EnsureMemoryFreed();
   }
+
+  return 0;
+}
