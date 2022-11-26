@@ -1,8 +1,12 @@
 #ifndef FSA_H
 #define FSA_H
 
-#include <stdio.h>
-#include <string.h>
+#include <algorithm>
+#include <assert.h>
+#include <cfloat>
+#include <iostream>
+#include <vector>
+using namespace std;
 
 template <class USER_TYPE> class FixedSizeAllocator {
 
