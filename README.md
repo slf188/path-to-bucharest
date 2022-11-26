@@ -20,6 +20,9 @@ La búsqueda en profundidad es normalmente más rápida que la búsqueda en prof
 
  ![mapa.png](mapa.png)
 
+## Objetivos
+Hay muchos objetivos a la hora de resolver un algoritmo de búsqueda. Los objetivos más comunes son encontrar el camino más corto desde un punto de partida hasta una meta, o encontrar el mejor camino desde un punto de partida hasta una meta. Otros objetivos pueden ser encontrar todos los caminos posibles desde un punto de partida, o encontrar caminos que eviten ciertos obstáculos.
+
 ## Herramientas utilizadas
 Para este proyecto se utilizaron las siguientes herramientas:
 
