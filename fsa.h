@@ -169,4 +169,4 @@ private: // data
   FSA_ELEMENT *m_pMemory;
 };
 
-#endif // defined FSA_H
+#endif
