@@ -1,9 +1,9 @@
 #include "astar.h"
 
 // por que en total existen 20 ciudades en la imagen
-const int MAX_CITIES = 20;
+const int MAX_CIUDADES = 20;
 // las ciudades estan ordenadas alfabeticamente
-enum ENUM_CITIES {
+enum ENUM_CIUDADES {
   // Arad lo ponemos el numero cero para ilustrar que es la primera ciudad
   Arad = 0,
   Bucharest,
@@ -27,37 +27,37 @@ enum ENUM_CITIES {
   Zerind
 };
 // creamos un vector de ciudades de tamano 20
-vector<string> CityNames(MAX_CITIES);
-float RomaniaMap[MAX_CITIES][MAX_CITIES];
+vector<string> NombresCiudades(MAX_CIUDADES);
+float MapaRomania[MAX_CIUDADES][MAX_CIUDADES];
 
-class PathSearchNode {
+class BusquedaRuta {
 public:
-  ENUM_CITIES city;
+  ENUM_CIUDADES ciudad;
   // constructor
-  PathSearchNode() { city = Arad; }
-  PathSearchNode(ENUM_CITIES in) { city = in; }
+  BusquedaRuta() { ciudad = Arad; }
+  BusquedaRuta(ENUM_CIUDADES in) { ciudad = in; }
   // esta clase posee un numero de 6 metodos
-  bool IsSameState(PathSearchNode &rhs);
-  float GoalDistanceEstimate(PathSearchNode &nodeGoal);
-  bool IsGoal(PathSearchNode &nodeGoal);
-  bool GetSuccessors(AStarSearch<PathSearchNode> *astarsearch,
-                     PathSearchNode *parent_node);
-  float GetCost(PathSearchNode &successor);
-  void PrintNodeInfo();
+  bool MismoEstado(BusquedaRuta &ejemplo);
+  float DistanciaEstimada(BusquedaRuta &nodoMeta);
+  bool EsMeta(BusquedaRuta &nodoMeta);
+  bool ConseguirSucesores(AStarSearch<BusquedaRuta> *busquedaEstrella,
+                          BusquedaRuta *nodoPadre);
+  float ConseguirCosto(BusquedaRuta &successor);
+  void InformacionNodo();
 };
 
-// revisamos si el nodo this es igual a rhs
-bool PathSearchNode::IsSameState(PathSearchNode &rhs) {
-  if (city == rhs.city)
+// revisamos si el nodo this es igual a ejemplo
+bool BusquedaRuta::MismoEstado(BusquedaRuta &ejemplo) {
+  if (ciudad == ejemplo.ciudad)
     return true;
   else
     return false;
 }
 
 // contamos la distancia entre la ciudad y bucharest
-float PathSearchNode::GoalDistanceEstimate(PathSearchNode &nodeGoal) {
+float BusquedaRuta::DistanciaEstimada(BusquedaRuta &nodoMeta) {
   // la meta siempre es bucharest
-  switch (city) {
+  switch (ciudad) {
   case Arad:
     return 366;
     break;
@@ -124,170 +124,174 @@ float PathSearchNode::GoalDistanceEstimate(PathSearchNode &nodeGoal) {
 }
 
 // revisar si es el nodo meta
-bool PathSearchNode::IsGoal(PathSearchNode &nodeGoal) {
-  if (city == Bucharest)
+bool BusquedaRuta::EsMeta(BusquedaRuta &nodoMeta) {
+  if (ciudad == Bucharest)
     return true;
   else
     return false;
 }
 
 // genera el sucesor del nodo actual
-bool PathSearchNode::GetSuccessors(AStarSearch<PathSearchNode> *astarsearch,
-                                   PathSearchNode *parent_node) {
-  PathSearchNode NewNode;
-  for (int c = 0; c < MAX_CITIES; c++) {
-    if (RomaniaMap[city][c] < 0)
+bool BusquedaRuta::ConseguirSucesores(
+    AStarSearch<BusquedaRuta> *busquedaEstrella, BusquedaRuta *nodoPadre) {
+  BusquedaRuta NewNode;
+  for (int c = 0; c < MAX_CIUDADES; c++) {
+    if (MapaRomania[ciudad][c] < 0)
       continue;
-    NewNode = PathSearchNode((ENUM_CITIES)c);
-    astarsearch->AddSuccessor(NewNode);
+    NewNode = BusquedaRuta((ENUM_CIUDADES)c);
+    busquedaEstrella->AddSuccessor(NewNode);
   }
   return true;
 }
 
 // el costo de ir del nodo actual al nodo sucesor
-float PathSearchNode::GetCost(PathSearchNode &successor) {
-  return RomaniaMap[city][successor.city];
+float BusquedaRuta::ConseguirCosto(BusquedaRuta &successor) {
+  return MapaRomania[ciudad][successor.ciudad];
 }
 
 // imprime informacion acerca del nodo actual
-void PathSearchNode::PrintNodeInfo() { cout << " " << CityNames[city] << endl; }
+void BusquedaRuta::InformacionNodo() {
+  cout << " " << NombresCiudades[ciudad] << endl;
+}
 
 int main() {
   // crear un mapa de romania
-  for (int i = 0; i < MAX_CITIES; i++) {
-    for (int j = 0; j < MAX_CITIES; j++) {
-      RomaniaMap[i][j] = -1.0;
+  for (int i = 0; i < MAX_CIUDADES; i++) {
+    for (int j = 0; j < MAX_CIUDADES; j++) {
+      MapaRomania[i][j] = -1.0;
     }
   }
   // establecemos las distancias de una ciudad a otra
-  RomaniaMap[Arad][Sibiu] = 140;
-  RomaniaMap[Arad][Zerind] = 75;
-  RomaniaMap[Arad][Timisoara] = 118;
-  RomaniaMap[Bucharest][Giurgiu] = 90;
-  RomaniaMap[Bucharest][Urziceni] = 85;
-  RomaniaMap[Bucharest][Fagaras] = 211;
-  RomaniaMap[Bucharest][Pitesti] = 101;
-  RomaniaMap[Craiova][Drobeta] = 120;
-  RomaniaMap[Craiova][Rimnicu_Vilcea] = 146;
-  RomaniaMap[Craiova][Pitesti] = 138;
-  RomaniaMap[Drobeta][Craiova] = 120;
-  RomaniaMap[Drobeta][Mehadia] = 75;
-  RomaniaMap[Eforie][Hirsova] = 75;
-  RomaniaMap[Fagaras][Bucharest] = 211;
-  RomaniaMap[Fagaras][Sibiu] = 99;
-  RomaniaMap[Giurgiu][Bucharest] = 90;
-  RomaniaMap[Hirsova][Eforie] = 86;
-  RomaniaMap[Hirsova][Urziceni] = 98;
-  RomaniaMap[Iasi][Vaslui] = 92;
-  RomaniaMap[Iasi][Neamt] = 87;
-  RomaniaMap[Lugoj][Timisoara] = 111;
-  RomaniaMap[Lugoj][Mehadia] = 70;
-  RomaniaMap[Mehadia][Lugoj] = 70;
-  RomaniaMap[Mehadia][Drobeta] = 75;
-  RomaniaMap[Neamt][Iasi] = 87;
-  RomaniaMap[Oradea][Zerind] = 71;
-  RomaniaMap[Oradea][Sibiu] = 151;
-  RomaniaMap[Pitesti][Bucharest] = 101;
-  RomaniaMap[Pitesti][Rimnicu_Vilcea] = 97;
-  RomaniaMap[Pitesti][Craiova] = 138;
-  RomaniaMap[Rimnicu_Vilcea][Pitesti] = 97;
-  RomaniaMap[Rimnicu_Vilcea][Craiova] = 146;
-  RomaniaMap[Rimnicu_Vilcea][Sibiu] = 80;
-  RomaniaMap[Sibiu][Rimnicu_Vilcea] = 80;
-  RomaniaMap[Sibiu][Fagaras] = 99;
-  RomaniaMap[Sibiu][Oradea] = 151;
-  RomaniaMap[Sibiu][Arad] = 140;
-  RomaniaMap[Timisoara][Arad] = 118;
-  RomaniaMap[Timisoara][Lugoj] = 111;
-  RomaniaMap[Urziceni][Bucharest] = 85;
-  RomaniaMap[Urziceni][Hirsova] = 98;
-  RomaniaMap[Urziceni][Vaslui] = 142;
-  RomaniaMap[Vaslui][Urziceni] = 142;
-  RomaniaMap[Vaslui][Iasi] = 92;
-  RomaniaMap[Zerind][Arad] = 75;
-  RomaniaMap[Zerind][Oradea] = 71;
+  MapaRomania[Arad][Sibiu] = 140;
+  MapaRomania[Arad][Zerind] = 75;
+  MapaRomania[Arad][Timisoara] = 118;
+  MapaRomania[Bucharest][Giurgiu] = 90;
+  MapaRomania[Bucharest][Urziceni] = 85;
+  MapaRomania[Bucharest][Fagaras] = 211;
+  MapaRomania[Bucharest][Pitesti] = 101;
+  MapaRomania[Craiova][Drobeta] = 120;
+  MapaRomania[Craiova][Rimnicu_Vilcea] = 146;
+  MapaRomania[Craiova][Pitesti] = 138;
+  MapaRomania[Drobeta][Craiova] = 120;
+  MapaRomania[Drobeta][Mehadia] = 75;
+  MapaRomania[Eforie][Hirsova] = 75;
+  MapaRomania[Fagaras][Bucharest] = 211;
+  MapaRomania[Fagaras][Sibiu] = 99;
+  MapaRomania[Giurgiu][Bucharest] = 90;
+  MapaRomania[Hirsova][Eforie] = 86;
+  MapaRomania[Hirsova][Urziceni] = 98;
+  MapaRomania[Iasi][Vaslui] = 92;
+  MapaRomania[Iasi][Neamt] = 87;
+  MapaRomania[Lugoj][Timisoara] = 111;
+  MapaRomania[Lugoj][Mehadia] = 70;
+  MapaRomania[Mehadia][Lugoj] = 70;
+  MapaRomania[Mehadia][Drobeta] = 75;
+  MapaRomania[Neamt][Iasi] = 87;
+  MapaRomania[Oradea][Zerind] = 71;
+  MapaRomania[Oradea][Sibiu] = 151;
+  MapaRomania[Pitesti][Bucharest] = 101;
+  MapaRomania[Pitesti][Rimnicu_Vilcea] = 97;
+  MapaRomania[Pitesti][Craiova] = 138;
+  MapaRomania[Rimnicu_Vilcea][Pitesti] = 97;
+  MapaRomania[Rimnicu_Vilcea][Craiova] = 146;
+  MapaRomania[Rimnicu_Vilcea][Sibiu] = 80;
+  MapaRomania[Sibiu][Rimnicu_Vilcea] = 80;
+  MapaRomania[Sibiu][Fagaras] = 99;
+  MapaRomania[Sibiu][Oradea] = 151;
+  MapaRomania[Sibiu][Arad] = 140;
+  MapaRomania[Timisoara][Arad] = 118;
+  MapaRomania[Timisoara][Lugoj] = 111;
+  MapaRomania[Urziceni][Bucharest] = 85;
+  MapaRomania[Urziceni][Hirsova] = 98;
+  MapaRomania[Urziceni][Vaslui] = 142;
+  MapaRomania[Vaslui][Urziceni] = 142;
+  MapaRomania[Vaslui][Iasi] = 92;
+  MapaRomania[Zerind][Arad] = 75;
+  MapaRomania[Zerind][Oradea] = 71;
 
   // asignamos los nombres de cada caso de las ciudades
-  // utilizamos el vector anteriormente creado CityNames
+  // utilizamos el vector anteriormente creado NombresCiudades
   // ordenamos a las ciudades alfabeticamente
-  CityNames[Arad].assign("Arad");
-  CityNames[Bucharest].assign("Bucharest");
-  CityNames[Craiova].assign("Craiova");
-  CityNames[Drobeta].assign("Drobeta");
-  CityNames[Eforie].assign("Eforie");
-  CityNames[Fagaras].assign("Fagaras");
-  CityNames[Giurgiu].assign("Giurgiu");
-  CityNames[Hirsova].assign("Hirsova");
-  CityNames[Iasi].assign("Iasi");
-  CityNames[Lugoj].assign("Lugoj");
-  CityNames[Mehadia].assign("Mehadia");
-  CityNames[Neamt].assign("Neamt");
-  CityNames[Oradea].assign("Oradea");
-  CityNames[Pitesti].assign("Pitesti");
-  CityNames[Rimnicu_Vilcea].assign("Rimnicu_Vilcea");
-  CityNames[Sibiu].assign("Sibiu");
-  CityNames[Timisoara].assign("Timisoara");
-  CityNames[Urziceni].assign("Urziceni");
-  CityNames[Vaslui].assign("Vaslui");
-  CityNames[Zerind].assign("Zerind");
+  NombresCiudades[Arad].assign("Arad");
+  NombresCiudades[Bucharest].assign("Bucharest");
+  NombresCiudades[Craiova].assign("Craiova");
+  NombresCiudades[Drobeta].assign("Drobeta");
+  NombresCiudades[Eforie].assign("Eforie");
+  NombresCiudades[Fagaras].assign("Fagaras");
+  NombresCiudades[Giurgiu].assign("Giurgiu");
+  NombresCiudades[Hirsova].assign("Hirsova");
+  NombresCiudades[Iasi].assign("Iasi");
+  NombresCiudades[Lugoj].assign("Lugoj");
+  NombresCiudades[Mehadia].assign("Mehadia");
+  NombresCiudades[Neamt].assign("Neamt");
+  NombresCiudades[Oradea].assign("Oradea");
+  NombresCiudades[Pitesti].assign("Pitesti");
+  NombresCiudades[Rimnicu_Vilcea].assign("Rimnicu_Vilcea");
+  NombresCiudades[Sibiu].assign("Sibiu");
+  NombresCiudades[Timisoara].assign("Timisoara");
+  NombresCiudades[Urziceni].assign("Urziceni");
+  NombresCiudades[Vaslui].assign("Vaslui");
+  NombresCiudades[Zerind].assign("Zerind");
 
   cout << "Bienvenido al programa de busqueda de camino a Bucarest" << endl;
   cout << "Estas son las ciudades disponibles" << endl;
-  for (int i = 0; i < MAX_CITIES; i++) {
-    cout << " " << CityNames[i] << endl;
+  for (int i = 0; i < MAX_CIUDADES; i++) {
+    cout << " " << NombresCiudades[i] << endl;
   }
 
   // aqui es donde nosotros cambiamos desde cual es la ciudad de origen
-  ENUM_CITIES initCity = Arad; // este es el nucleo del funcionamiento de
+  ENUM_CIUDADES initCity = Arad; // este es el nucleo del funcionamiento de
   // nuestro programa muy importante
 
-  cout << "En este caso la ciudad de origen es " << CityNames[initCity] << endl;
+  cout << "En este caso la ciudad de origen es " << NombresCiudades[initCity]
+       << endl;
 
-  // An instance of A* search class
-  AStarSearch<PathSearchNode> astarsearch;
+  // Instancia de la clase A*
+  AStarSearch<BusquedaRuta> busquedaEstrella;
 
   int SearchCount = 0;
   int NumSearches = 1;
 
   while (SearchCount < NumSearches) {
-    // Create a start state
-    PathSearchNode nodeStart;
-    nodeStart.city = initCity;
+    // creamos un estado inicial
+    BusquedaRuta nodeStart;
+    nodeStart.ciudad = initCity;
 
-    // Define the goal state, always Bucharest!
-    PathSearchNode nodeEnd;
-    nodeEnd.city = Bucharest;
+    // muy importante ***
+    // el estado final siempre es Bucharest
+    // 不要动这里
+    BusquedaRuta nodeEnd;
+    nodeEnd.ciudad = Bucharest;
 
-    // Set Start and goal states
-    astarsearch.SetStartAndGoalStates(nodeStart, nodeEnd);
+    // aqui establecemos el estado inicial y el final
+    busquedaEstrella.SetStartAndGoalStates(nodeStart, nodeEnd);
 
     int SearchState;
     int SearchSteps = 0;
 
     do {
-      SearchState = astarsearch.SearchStep();
+      SearchState = busquedaEstrella.SearchStep();
       SearchSteps++;
-    } while (SearchState ==
-             AStarSearch<PathSearchNode>::SEARCH_STATE_SEARCHING);
+    } while (SearchState == AStarSearch<BusquedaRuta>::SEARCH_STATE_SEARCHING);
 
-    if (SearchState == AStarSearch<PathSearchNode>::SEARCH_STATE_SUCCEEDED) {
+    if (SearchState == AStarSearch<BusquedaRuta>::SEARCH_STATE_SUCCEEDED) {
       cout << "Hemos encontrado una ruta\n";
-      PathSearchNode *node = astarsearch.GetSolutionStart();
+      BusquedaRuta *node = busquedaEstrella.GetSolutionStart();
       cout << "Mostrando la solucion\n";
-      node->PrintNodeInfo();
+      node->InformacionNodo();
       for (;;) {
-        node = astarsearch.GetSolutionNext();
+        node = busquedaEstrella.GetSolutionNext();
         if (!node)
           break;
-        node->PrintNodeInfo();
+        node->InformacionNodo();
       };
-      // Once you're done with the solution you can free the nodes up
-      astarsearch.FreeSolutionNodes();
+      // ya encontrada la solucion podemos liberar los nodos
+      busquedaEstrella.FreeSolutionNodes();
     }
-    // Display the number of loops the search went through
+    // mostramos el numero de pasos que ha dado la busqueda
     cout << "Pasos a la solucion: " << SearchSteps - 1 << "\n";
     SearchCount++;
-    astarsearch.EnsureMemoryFreed();
+    busquedaEstrella.EnsureMemoryFreed();
   }
 
   return 0;
