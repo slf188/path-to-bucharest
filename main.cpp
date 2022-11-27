@@ -40,7 +40,7 @@ public:
   bool MismoEstado(BusquedaRuta &ejemplo);
   float DistanciaEstimada(BusquedaRuta &nodoMeta);
   bool EsMeta(BusquedaRuta &nodoMeta);
-  bool ConseguirSucesores(AStarSearch<BusquedaRuta> *busquedaEstrella,
+  bool ConseguirSucesores(BusquedaEstrella<BusquedaRuta> *busquedaEstrella,
                           BusquedaRuta *nodoPadre);
   float ConseguirCosto(BusquedaRuta &successor);
   void InformacionNodo();
@@ -133,7 +133,7 @@ bool BusquedaRuta::EsMeta(BusquedaRuta &nodoMeta) {
 
 // genera el sucesor del nodo actual
 bool BusquedaRuta::ConseguirSucesores(
-    AStarSearch<BusquedaRuta> *busquedaEstrella, BusquedaRuta *nodoPadre) {
+    BusquedaEstrella<BusquedaRuta> *busquedaEstrella, BusquedaRuta *nodoPadre) {
   BusquedaRuta NewNode;
   for (int c = 0; c < MAX_CIUDADES; c++) {
     if (MapaRomania[ciudad][c] < 0)
@@ -247,7 +247,7 @@ int main() {
        << endl;
 
   // Instancia de la clase A*
-  AStarSearch<BusquedaRuta> busquedaEstrella;
+  BusquedaEstrella<BusquedaRuta> busquedaEstrella;
 
   int SearchCount = 0;
   int NumSearches = 1;
@@ -272,21 +272,21 @@ int main() {
     do {
       SearchState = busquedaEstrella.SearchStep();
       SearchSteps++;
-    } while (SearchState == AStarSearch<BusquedaRuta>::SEARCH_STATE_SEARCHING);
+    } while (SearchState == BusquedaEstrella<BusquedaRuta>::ESTADO_BUSQUEDA);
 
-    if (SearchState == AStarSearch<BusquedaRuta>::SEARCH_STATE_SUCCEEDED) {
+    if (SearchState == BusquedaEstrella<BusquedaRuta>::ESTADO_BUSQUEDA_EXITO) {
       cout << "Hemos encontrado una ruta\n";
-      BusquedaRuta *node = busquedaEstrella.GetSolutionStart();
+      BusquedaRuta *node = busquedaEstrella.SolucionInicio();
       cout << "Mostrando la solucion\n";
       node->InformacionNodo();
       for (;;) {
-        node = busquedaEstrella.GetSolutionNext();
+        node = busquedaEstrella.SolucionSiguienteNodo();
         if (!node)
           break;
         node->InformacionNodo();
       };
       // ya encontrada la solucion podemos liberar los nodos
-      busquedaEstrella.FreeSolutionNodes();
+      busquedaEstrella.LiberarNodos();
     }
     // mostramos el numero de pasos que ha dado la busqueda
     cout << "Pasos a la solucion: " << SearchSteps - 1 << "\n";
