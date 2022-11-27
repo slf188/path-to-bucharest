@@ -2,6 +2,7 @@
 #define ASTAR_H
 
 #include <algorithm>
+// con esto podremos utilizar el macro assert()
 #include <assert.h>
 #include <cfloat>
 #include <iostream>
