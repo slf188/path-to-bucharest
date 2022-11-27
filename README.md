@@ -97,6 +97,13 @@ Para este proyecto se utilizaron las siguientes herramientas:
 
 [Shell](https://en.wikipedia.org/wiki/Shell_script)
 
+## Conclusión
+Hay muchos algoritmos de búsqueda diferentes a disposición de los desarrolladores, y el algoritmo más apropiado para una tarea determinada puede variar en función de la naturaleza de los datos que se buscan. Al elegir un algoritmo de búsqueda, es importante tener en cuenta tanto la complejidad temporal como la espacial del algoritmo. La complejidad temporal es una medida del tiempo que tarda el algoritmo en encontrar una solución, mientras que la complejidad espacial es una medida de la cantidad de memoria que necesita el algoritmo.
+
+Los algoritmos de búsqueda más sencillos son los métodos de fuerza bruta, que se limitan a probar todas las soluciones posibles hasta encontrar una que funcione. Estos métodos pueden ser muy lentos, pero no requieren más memoria que la necesaria para almacenar los datos buscados. Los algoritmos más sofisticados utilizan heurísticas, o reglas empíricas, para eliminar algunas posibilidades antes de considerarlas todas. Los algoritmos de búsqueda heurística pueden ser mucho más rápidos que los métodos de fuerza bruta, pero pueden requerir más memoria si su heurística es compleja.
+
+**No hay un único algoritmo de búsqueda que sea el mejor; en su lugar, se debe elegir un algoritmo adecuado basándose tanto en su complejidad de tiempo y espacio como en su capacidad para encontrar soluciones utilizando la heurística.**
+
 ## Referencias
 
 [CLRS](https://www.amazon.com/Introduction-Algorithms-3rd-MIT-Press/dp/0262033844)
@@ -105,12 +112,7 @@ Para este proyecto se utilizaron las siguientes herramientas:
 
 [Mastering Data Structures & Algorithms using C and C++](https://www.udemy.com/course/datastructurescncpp/)
 
-## Conclusión
-Hay muchos algoritmos de búsqueda diferentes a disposición de los desarrolladores, y el algoritmo más apropiado para una tarea determinada puede variar en función de la naturaleza de los datos que se buscan. Al elegir un algoritmo de búsqueda, es importante tener en cuenta tanto la complejidad temporal como la espacial del algoritmo. La complejidad temporal es una medida del tiempo que tarda el algoritmo en encontrar una solución, mientras que la complejidad espacial es una medida de la cantidad de memoria que necesita el algoritmo.
-
-Los algoritmos de búsqueda más sencillos son los métodos de fuerza bruta, que se limitan a probar todas las soluciones posibles hasta encontrar una que funcione. Estos métodos pueden ser muy lentos, pero no requieren más memoria que la necesaria para almacenar los datos buscados. Los algoritmos más sofisticados utilizan heurísticas, o reglas empíricas, para eliminar algunas posibilidades antes de considerarlas todas. Los algoritmos de búsqueda heurística pueden ser mucho más rápidos que los métodos de fuerza bruta, pero pueden requerir más memoria si su heurística es compleja.
-
-**No hay un único algoritmo de búsqueda que sea el mejor; en su lugar, se debe elegir un algoritmo adecuado basándose tanto en su complejidad de tiempo y espacio como en su capacidad para encontrar soluciones utilizando la heurística.**
+[HackerRank](https://www.youtube.com/watch?v=P8Xa2BitN3I&list=PLzg3FkRs7fcRt7D4D9w9dPyc2e7Eqvrw9&ab_channel=HackerRank)
 
 ## Licencia
 [MIT](LICENSE)
