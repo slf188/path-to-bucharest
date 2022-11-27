@@ -139,7 +139,7 @@ bool BusquedaRuta::ConseguirSucesores(
     if (MapaRomania[ciudad][c] < 0)
       continue;
     NewNode = BusquedaRuta((ENUM_CIUDADES)c);
-    busquedaEstrella->AddSuccessor(NewNode);
+    busquedaEstrella->AgregarSucesor(NewNode);
   }
   return true;
 }
@@ -270,7 +270,7 @@ int main() {
     int SearchSteps = 0;
 
     do {
-      SearchState = busquedaEstrella.SearchStep();
+      SearchState = busquedaEstrella.pasosBusqueda();
       SearchSteps++;
     } while (SearchState == BusquedaEstrella<BusquedaRuta>::ESTADO_BUSQUEDA);
 
