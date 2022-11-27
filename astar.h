@@ -1,8 +1,12 @@
 #ifndef ASTAR_H
 #define ASTAR_H
 
-// utilizamos fsa.h para la gestion de memoria en nuestro programa
-#include "fsa.h"
+#include <algorithm>
+#include <assert.h>
+#include <cfloat>
+#include <iostream>
+#include <vector>
+using namespace std;
 
 // EstadoUsuario es el tipo de estados del usuario
 template <class EstadoUsuario> class BusquedaEstrella {
@@ -20,7 +24,8 @@ public:
 public:
   class Nodo {
   public:
-    // padre se usa en la busqueda para rastrear el padre de los sucessores de los nodos
+    // padre se usa en la busqueda para rastrear el padre de los sucessores de
+    // los nodos
     Nodo *padre;
     // hijo es para ver la busqueda en reversa
     Nodo *hijo;
@@ -34,7 +39,6 @@ public:
     EstadoUsuario estadoUsuario;
   };
 
-
   // la clase Comparar nos permite el valor f de dos nodos
   class Comparacion {
   public:
@@ -44,15 +48,15 @@ public:
 public:
   // constructor solo inicializa datos
   BusquedaEstrella()
-      : estado(ESTADO_NO_INICIALIZADO), solucionNodoActual(NULL),
-        nodoContar(0), cancelarSolicitud(false) {}
+      : estado(ESTADO_NO_INICIALIZADO), solucionNodoActual(NULL), nodoContar(0),
+        cancelarSolicitud(false) {}
 
   BusquedaEstrella(int NodosMax)
-      : estado(ESTADO_NO_INICIALIZADO), solucionNodoActual(NULL),
-        nodoContar(0), cancelarSolicitud(false) {
-  }
+      : estado(ESTADO_NO_INICIALIZADO), solucionNodoActual(NULL), nodoContar(0),
+        cancelarSolicitud(false) {}
 
-  // llamamos en cualquier momento para cancelar la busqueda y liberar la memoria
+  // llamamos en cualquier momento para cancelar la busqueda y liberar la
+  // memoria
   void CancelarBusqueda() { cancelarSolicitud = true; }
 
   // establecemos el estado inicial y el final
@@ -97,10 +101,9 @@ public:
       return estado;
     }
 
-    // si la lista esta ya sea vacia o el usuario ha solicitado cancelar la busqueda
-    // automaticamente retornamos fallo y liberamos la memoria
+    // si la lista esta ya sea vacia o el usuario ha solicitado cancelar la
+    // busqueda automaticamente retornamos fallo y liberamos la memoria
     if (lista.empty() || cancelarSolicitud) {
-      LiberarTodosNodos();
       estado = ESTADO_BUSQUEDA_FALLA;
       return estado;
     }
@@ -123,7 +126,8 @@ public:
       if (false == n->estadoUsuario.MismoEstado(inicio->estadoUsuario)) {
         LiberarNodo(n);
 
-        // definimos el puntero hijo en cada nodo (excepto meta que no tiene hijo)
+        // definimos el puntero hijo en cada nodo (excepto meta que no tiene
+        // hijo)
         Nodo *nodoHijo = meta;
         Nodo *nodoPadre = meta->padre;
 
@@ -133,65 +137,47 @@ public:
           nodoHijo = nodoPadre;
           nodoPadre = nodoPadre->padre;
 
-        } while (nodoHijo !=
-                 inicio);
+        } while (nodoHijo != inicio);
       }
 
       estado = ESTADO_BUSQUEDA_EXITO;
 
       return estado;
-    } else // not goal
+    } else // no es la meta
     {
+      // vector de nodos sucesores a n
+      sucesores.clear();
 
-      // We now need to generate the successors of this node
-      // The user helps us to do this, and we keep the new nodes in
-      // m_Successors ...
-
-      m_Successors.clear(); // empty vector of successor nodes to n
-
-      // User provides this functions and uses AgregarSucesor to add each
-      // successor of node 'n' to m_Successors
       bool ret = n->estadoUsuario.ConseguirSucesores(
           this, n->padre ? &n->padre->estadoUsuario : NULL);
 
       if (!ret) {
-
         typename vector<Nodo *>::iterator successor;
 
         // liberamos los nodos que previsamente fueron agregados
-        for (successor = m_Successors.begin(); successor != m_Successors.end();
+        for (successor = sucesores.begin(); successor != sucesores.end();
              successor++) {
           LiberarNodo((*successor));
         }
-
-        m_Successors.clear(); // empty vector of successor nodes to n
-
+        // vector vacio de nodos sucesores
+        sucesores.clear();
         // liberamos todo lo que previamente asignamos
         LiberarNodo(n);
-        LiberarTodosNodos();
-
         estado = ESTADO_BUSQUEDA_SIN_MEMORIA;
         return estado;
       }
 
-      // Now handle each successor to the current node ...
-      for (typename vector<Nodo *>::iterator successor = m_Successors.begin();
-           successor != m_Successors.end(); successor++) {
-
+      // manejamos cada sucesor del nodo actual
+      for (typename vector<Nodo *>::iterator successor = sucesores.begin();
+           successor != sucesores.end(); successor++) {
         // el valor de g para este sucesor
         float nuevoG =
             n->g + n->estadoUsuario.ConseguirCosto((*successor)->estadoUsuario);
 
-        // Now we need to find whether the node is on the open or closed lists
-        // If it is but the node that is already on them is better (lower g)
-        // then we can forget about this successor
-
-        // First linear search of open list to find node
-
         typename vector<Nodo *>::iterator openlist_result;
 
-        for (openlist_result = lista.begin();
-             openlist_result != lista.end(); openlist_result++) {
+        for (openlist_result = lista.begin(); openlist_result != lista.end();
+             openlist_result++) {
           if ((*openlist_result)
                   ->estadoUsuario.MismoEstado((*successor)->estadoUsuario)) {
             break;
@@ -199,13 +185,10 @@ public:
         }
 
         if (openlist_result != lista.end()) {
-
-          // we found this state on open
-
+          // encontramos el siguiente estado en la lista abierta
           if ((*openlist_result)->g <= nuevoG) {
             LiberarNodo((*successor));
-
-            // the one on Open is cheaper than this one
+            // la abierta tiene un mejor camino, asi que la descartamos
             continue;
           }
         }
@@ -219,11 +202,8 @@ public:
             break;
           }
         }
-
         if (closedlist_result != listaCerrada.end()) {
-
           // este estado esta cerrado
-
           if ((*closedlist_result)->g <= nuevoG) {
             // el cerrado tiene un valor menor a este
             LiberarNodo((*successor));
@@ -231,43 +211,30 @@ public:
             continue;
           }
         }
-
-        // This node is the best node so far with this particular state
-        // so lets keep it and set up its AStar specific data ...
-
+        // Este es el mejor nodo hasta ahora
         (*successor)->padre = n;
         (*successor)->g = nuevoG;
         (*successor)->h =
             (*successor)->estadoUsuario.DistanciaEstimada(meta->estadoUsuario);
         (*successor)->f = (*successor)->g + (*successor)->h;
-
-        // Successor in closed list
         // Sucesor en una lista cerrada
         // 1. Actualizar la version anterior de este nodo en la lista cerrada
         // 2. Moverla de la lista cerrada a la abierta
-        // 3. Ordenar el heap de nuevo 
-
+        // 3. Ordenar el heap de nuevo
         if (closedlist_result != listaCerrada.end()) {
-          // Update closed node with successor node AStar data
-          //*(*closedlist_result) = *(*successor);
           (*closedlist_result)->padre = (*successor)->padre;
           (*closedlist_result)->g = (*successor)->g;
           (*closedlist_result)->h = (*successor)->h;
           (*closedlist_result)->f = (*successor)->f;
-
           // Liberamos el nodo sucesor
           LiberarNodo((*successor));
-
           // Agregamos el nodo cerrado a la lista abierta
           lista.push_back((*closedlist_result));
-
           // Eliminamos el nodo cerrado de la lista cerrada
           listaCerrada.erase(closedlist_result);
-
           // Ordenamos el elemento de nuevo en el heap
           push_heap(lista.begin(), lista.end(), Comparacion());
         }
-
         // Successor in open list
         // Sucesor en una lista abierta
         // 1. Actualizar la version anterior de este nodo en la lista abierta
@@ -278,68 +245,51 @@ public:
           (*openlist_result)->g = (*successor)->g;
           (*openlist_result)->h = (*successor)->h;
           (*openlist_result)->f = (*successor)->f;
-
           // Liberamos el nodo sucesor
           LiberarNodo((*successor));
-
           make_heap(lista.begin(), lista.end(), Comparacion());
         }
-
         // nuevo sucesor
         // 1 - Moverlo de la lista de sucesores a la lista abierta
-        // 2 - ordenamos el heap de nuevo en la lista abierta 
-
+        // 2 - ordenamos el heap de nuevo en la lista abierta
         else {
           // agregamos el sucesor a la lista abierta
           lista.push_back((*successor));
-
           // ordenamos el elemento de nuevo en el heap
           push_heap(lista.begin(), lista.end(), Comparacion());
         }
       }
-
       // agregamos n a la lista cerrada, ya que lo expandimos
       listaCerrada.push_back(n);
-
     }
-
     return estado;
   }
 
-  // User calls this to add a successor to a list of successors
-  // when expanding the search frontier
+  // se llama esto para agregar un sucesor a una lista de sucesores
   bool AgregarSucesor(EstadoUsuario &State) {
     Nodo *node = AllocateNode();
-
     if (node) {
       node->estadoUsuario = State;
-
-      m_Successors.push_back(node);
-
+      sucesores.push_back(node);
       return true;
     }
-
     return false;
   }
 
   // esto es para limpiar toda la memoria usada por los nodos cuando terminamos
   void LiberarNodos() {
     Nodo *n = inicio;
-
     if (inicio->hijo) {
       do {
         Nodo *del = n;
         n = n->hijo;
         LiberarNodo(del);
-
         del = NULL;
-
       } while (n != meta);
 
       LiberarNodo(n); // eliminar meta
     } else {
-      // if the start node is the solution we need to just delete the start and
-      // goal nodes
+      // si el nodo de inicio es la solucion, solo necesitamos eliminar el nodo
       LiberarNodo(inicio);
       LiberarNodo(meta);
     }
@@ -355,33 +305,20 @@ public:
     }
   }
 
-  // Get next node
+  // nodo siguiente
   EstadoUsuario *SolucionSiguienteNodo() {
     if (solucionNodoActual) {
       if (solucionNodoActual->hijo) {
-
         Nodo *hijo = solucionNodoActual->hijo;
-
         solucionNodoActual = solucionNodoActual->hijo;
-
         return &hijo->estadoUsuario;
       }
     }
-
     return NULL;
   }
 
-  void EnsureMemoryFreed() {}
-
-private: // methods
-  // This is called when a search fails or is cancelled to free all used
-  // memory
-  void LiberarTodosNodos() {
-  }
-
-  // Nodo memory management
+private: // manejo de memoria
   Nodo *AllocateNode() {
-
 #if !USE_FSA_MEMORY
     nodoContar++;
     Nodo *p = new Nodo;
@@ -389,36 +326,20 @@ private: // methods
 #endif
   }
 
-  void LiberarNodo(Nodo *node) {
-    nodoContar--;
-  }
+  void LiberarNodo(Nodo *node) { nodoContar--; }
 
-private: // data
-  // Heap (simple vector but used as a heap, cf. Steve Rabin's game gems
-  // article)
+private:
   vector<Nodo *> lista;
-
-  // Closed list is a vector.
   vector<Nodo *> listaCerrada;
-
-  // Successors is a vector filled out by the user each type successors to a
-  // node are generated
-  vector<Nodo *> m_Successors;
-
-  // estado
+  // sucesores es un vector llenado por el usuario cada vez que se generan los
+  // nodos
+  vector<Nodo *> sucesores;
   int estado;
-
-  // contador de pasos
   int pasos;
-
-  // punteros de incio y meta
   Nodo *inicio;
   Nodo *meta;
-
   Nodo *solucionNodoActual;
-
   int nodoContar;
-
   bool cancelarSolicitud;
 };
 
