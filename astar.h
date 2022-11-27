@@ -17,9 +17,6 @@ public:
     ESTADO_BUSQUEDA_INVALIDO
   };
 
-  // un nodo representa un estado posible en la busqueda
-  // el usuario proporciona el tipo de estado incluido dentro de este tipo
-
 public:
   class Nodo {
   public:
@@ -89,7 +86,7 @@ public:
     pasos = 0;
   }
 
-  int SearchStep() {
+  int pasosBusqueda() {
     // terminamos si el usuario no ha inicializado la busqueda
     assert((estado > ESTADO_NO_INICIALIZADO) &&
            (estado < ESTADO_BUSQUEDA_INVALIDO));
@@ -140,9 +137,6 @@ public:
                  inicio);
       }
 
-      // eliminamos los nodos que no son necesario para la solucion
-      LiberarNodosSinUsar();
-
       estado = ESTADO_BUSQUEDA_EXITO;
 
       return estado;
@@ -155,7 +149,7 @@ public:
 
       m_Successors.clear(); // empty vector of successor nodes to n
 
-      // User provides this functions and uses AddSuccessor to add each
+      // User provides this functions and uses AgregarSucesor to add each
       // successor of node 'n' to m_Successors
       bool ret = n->estadoUsuario.ConseguirSucesores(
           this, n->padre ? &n->padre->estadoUsuario : NULL);
@@ -314,7 +308,7 @@ public:
 
   // User calls this to add a successor to a list of successors
   // when expanding the search frontier
-  bool AddSuccessor(EstadoUsuario &State) {
+  bool AgregarSucesor(EstadoUsuario &State) {
     Nodo *node = AllocateNode();
 
     if (node) {
@@ -383,69 +377,6 @@ private: // methods
   // This is called when a search fails or is cancelled to free all used
   // memory
   void LiberarTodosNodos() {
-    // iterate open list and delete all nodes
-    typename vector<Nodo *>::iterator iterOpen = lista.begin();
-
-    while (iterOpen != lista.end()) {
-      Nodo *n = (*iterOpen);
-      LiberarNodo(n);
-
-      iterOpen++;
-    }
-
-    lista.clear();
-
-    // iterate closed list and delete unused nodes
-    typename vector<Nodo *>::iterator iterClosed;
-
-    for (iterClosed = listaCerrada.begin(); iterClosed != listaCerrada.end();
-         iterClosed++) {
-      Nodo *n = (*iterClosed);
-      LiberarNodo(n);
-    }
-
-    listaCerrada.clear();
-
-    // delete the goal
-
-    LiberarNodo(meta);
-  }
-
-  // This call is made by the search class when the search ends. A lot of nodes
-  // may be created that are still present when the search ends. They will be
-  // deleted by this routine once the search ends
-  void LiberarNodosSinUsar() {
-    // iterate open list and delete unused nodes
-    typename vector<Nodo *>::iterator iterOpen = lista.begin();
-
-    while (iterOpen != lista.end()) {
-      Nodo *n = (*iterOpen);
-
-      if (!n->hijo) {
-        LiberarNodo(n);
-
-        n = NULL;
-      }
-
-      iterOpen++;
-    }
-
-    lista.clear();
-
-    // iterate closed list and delete unused nodes
-    typename vector<Nodo *>::iterator iterClosed;
-
-    for (iterClosed = listaCerrada.begin(); iterClosed != listaCerrada.end();
-         iterClosed++) {
-      Nodo *n = (*iterClosed);
-
-      if (!n->hijo) {
-        LiberarNodo(n);
-        n = NULL;
-      }
-    }
-
-    listaCerrada.clear();
   }
 
   // Nodo memory management
@@ -459,10 +390,7 @@ private: // methods
   }
 
   void LiberarNodo(Nodo *node) {
-
     nodoContar--;
-
-
   }
 
 private: // data
@@ -477,46 +405,21 @@ private: // data
   // node are generated
   vector<Nodo *> m_Successors;
 
-  // State
-  unsigned int estado;
+  // estado
+  int estado;
 
-  // Counts steps
+  // contador de pasos
   int pasos;
 
-  // Inicio and goal state pointers
+  // punteros de incio y meta
   Nodo *inicio;
   Nodo *meta;
 
   Nodo *solucionNodoActual;
 
-  // Debug : need to keep these two iterators around
-  // for the user Dbg functions
-  typename vector<Nodo *>::iterator iterDbgOpen;
-  typename vector<Nodo *>::iterator iterDbgClosed;
-
-  // debugging : count memory allocation and free's
   int nodoContar;
 
   bool cancelarSolicitud;
-};
-
-template <class T> class AStarState {
-public:
-  virtual ~AStarState() {}
-  virtual float
-  DistanciaEstimada(T &nodeGoal) = 0; // Heuristic function which computes
-                                      // the estimated cost to the goal node
-  virtual bool
-  EsMeta(T &nodeGoal) = 0; // Returns true if this node is the goal node
-  virtual bool ConseguirSucesores(
-      BusquedaEstrella<T> *astarsearch,
-      T *parent_node) = 0; // Retrieves all successors to this node and adds
-                           // them via astarsearch.addSuccessor()
-  virtual float
-  ConseguirCosto(T &successor) = 0; // Computes the cost of travelling from this
-                                    // node to the successor node
-  virtual bool MismoEstado(
-      T &rhs) = 0; // Returns true if this node is the same as the rhs node
 };
 
 #endif
