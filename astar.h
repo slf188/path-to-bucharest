@@ -4,11 +4,6 @@
 // fast fixed size memory allocator, used for fast node memory management
 #include "fsa.h"
 
-// disable warning that debugging information has lines that are truncated
-// occurs in stl headers
-
-template <class T> class AStarState;
-
 // The AStar search class. UserState is the users state space type
 template <class UserState> class AStarSearch {
 
@@ -89,7 +84,7 @@ public: // methods
     // The user only needs fill out the state information
 
     m_Start->g = 0;
-    m_Start->h = m_Start->m_UserState.GoalDistanceEstimate(m_Goal->m_UserState);
+    m_Start->h = m_Start->m_UserState.DistanciaEstimada(m_Goal->m_UserState);
     m_Start->f = m_Start->g + m_Start->h;
     m_Start->parent = 0;
 
@@ -135,7 +130,7 @@ public: // methods
     m_OpenList.pop_back();
 
     // Check for the goal, once we pop that we're done
-    if (n->m_UserState.IsGoal(m_Goal->m_UserState)) {
+    if (n->m_UserState.EsMeta(m_Goal->m_UserState)) {
       // The user is going to use the Goal Node he passed in
       // so copy the parent pointer of n
       m_Goal->parent = n->parent;
@@ -143,7 +138,7 @@ public: // methods
 
       // A special case is that the goal was passed in as the start state
       // so handle that here
-      if (false == n->m_UserState.IsSameState(m_Start->m_UserState)) {
+      if (false == n->m_UserState.MismoEstado(m_Start->m_UserState)) {
         FreeNode(n);
 
         // set the child pointers in each node (except Goal which has no child)
@@ -177,7 +172,7 @@ public: // methods
 
       // User provides this functions and uses AddSuccessor to add each
       // successor of node 'n' to m_Successors
-      bool ret = n->m_UserState.GetSuccessors(
+      bool ret = n->m_UserState.ConseguirSucesores(
           this, n->parent ? &n->parent->m_UserState : NULL);
 
       if (!ret) {
@@ -205,7 +200,8 @@ public: // methods
            successor != m_Successors.end(); successor++) {
 
         // 	The g value for this successor ...
-        float newg = n->g + n->m_UserState.GetCost((*successor)->m_UserState);
+        float newg =
+            n->g + n->m_UserState.ConseguirCosto((*successor)->m_UserState);
 
         // Now we need to find whether the node is on the open or closed lists
         // If it is but the node that is already on them is better (lower g)
@@ -218,7 +214,7 @@ public: // methods
         for (openlist_result = m_OpenList.begin();
              openlist_result != m_OpenList.end(); openlist_result++) {
           if ((*openlist_result)
-                  ->m_UserState.IsSameState((*successor)->m_UserState)) {
+                  ->m_UserState.MismoEstado((*successor)->m_UserState)) {
             break;
           }
         }
@@ -240,7 +236,7 @@ public: // methods
         for (closedlist_result = m_ClosedList.begin();
              closedlist_result != m_ClosedList.end(); closedlist_result++) {
           if ((*closedlist_result)
-                  ->m_UserState.IsSameState((*successor)->m_UserState)) {
+                  ->m_UserState.MismoEstado((*successor)->m_UserState)) {
             break;
           }
         }
@@ -263,7 +259,7 @@ public: // methods
         (*successor)->parent = n;
         (*successor)->g = newg;
         (*successor)->h =
-            (*successor)->m_UserState.GoalDistanceEstimate(m_Goal->m_UserState);
+            (*successor)->m_UserState.DistanciaEstimada(m_Goal->m_UserState);
         (*successor)->f = (*successor)->g + (*successor)->h;
 
         // Successor in closed list
@@ -655,18 +651,18 @@ template <class T> class AStarState {
 public:
   virtual ~AStarState() {}
   virtual float
-  GoalDistanceEstimate(T &nodeGoal) = 0; // Heuristic function which computes
-                                         // the estimated cost to the goal node
+  DistanciaEstimada(T &nodeGoal) = 0; // Heuristic function which computes
+                                      // the estimated cost to the goal node
   virtual bool
-  IsGoal(T &nodeGoal) = 0; // Returns true if this node is the goal node
-  virtual bool GetSuccessors(
+  EsMeta(T &nodeGoal) = 0; // Returns true if this node is the goal node
+  virtual bool ConseguirSucesores(
       AStarSearch<T> *astarsearch,
       T *parent_node) = 0; // Retrieves all successors to this node and adds
                            // them via astarsearch.addSuccessor()
   virtual float
-  GetCost(T &successor) = 0; // Computes the cost of travelling from this node
-                             // to the successor node
-  virtual bool IsSameState(
+  ConseguirCosto(T &successor) = 0; // Computes the cost of travelling from this
+                                    // node to the successor node
+  virtual bool MismoEstado(
       T &rhs) = 0; // Returns true if this node is the same as the rhs node
 };
 
