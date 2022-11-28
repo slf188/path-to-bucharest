@@ -70,7 +70,7 @@ Número de pasos para llegar a la solución.
 
 Hoy en día es mas fácil que nunca compartir nuestro código, ya que existen plataformas como GitHub, donde podemos subir nuestro código y compartirlo con el mundo, en este caso GitHub ciertamente es que permite a otras personas ver nuestro código y descargarlo, pero el único problema es que se necesitan programas como Git y un compilador de C++ para poder ejecutar el programa, pero no es necesario recurrir a soluciones como estas, ya que existen compañías como [Replit](www.replit.com) que nos permiten ejecutar nuestro código sin necesidad de instalar nada, en este caso podemos ver nuestro código y ejecutarlo en el mismo sitio.
 
-Escanear el código QR para acceder al programa
+Escanear el código QR para acceder al programa o dar click en el siguiente [link](https://replit.com/@slf188/Bucharest)
 
 ![qr.png](qr.png)
 
