@@ -91,6 +91,10 @@ Para este proyecto se utilizaron las siguientes herramientas:
 
 [C++](https://www.cplusplus.com/)
 
+[Python](https://www.python.org/)
+
+[Makefile](https://www.gnu.org/software/make/manual/make.html)
+
 [LaTeX](https://www.latex-project.org/)
 
 [Markdown](https://www.markdownguide.org/)
