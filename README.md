@@ -25,12 +25,12 @@ Hay muchos objetivos a la hora de resolver un algoritmo de búsqueda. Los objeti
 
 ## Definición del Algoritmo de Búsqueda A*
 La forma más conocida de búsqueda del mejor primero es la llamada Búsqueda A*. 
+
 Evalúa los nodos mediante combinando g(n), el coste de llegar al nodo, y h(n), el coste de llegar del nodo al objetivo:
 
 $$F(n) = g(n) + h(n)$$
 
-Dado que g(n) da el coste del camino desde el nodo inicial hasta el nodo n, y h(n) es el coste estimado del
-más barato de n a la meta, tenemos:
+Dado que g(n) da el coste del camino desde el nodo inicial hasta el nodo n, y h(n) es el coste estimado del más barato de n a la meta, tenemos:
 F(n)= coste estimado de la solución más barata a través de n.
 
 Por lo tanto, si estamos tratando de encontrar la solución más barata, algo razonable es probar primero el nodo con
@@ -68,7 +68,7 @@ Número de pasos para llegar a la solución.
 
 **Acceso**
 
-Hoy en día es mas fácil que nunca compartir nuestro código, ya que existen plataformas como GitHub, donde podemos subir nuestro código y compartirlo con el mundo, en este caso GitHub ciertamente es que permite a otras personas ver nuestro código y descargarlo, pero el único problema es que se necesitan programas como Git y un compilador de C++ para poder ejecutar el programa, pero no es necesario recurrir a soluciones como estas, ya que existen compañías como Repl.it que nos permiten ejecutar nuestro código sin necesidad de instalar nada, en este caso podemos ver nuestro código y ejecutarlo en el mismo sitio.
+Hoy en día es mas fácil que nunca compartir nuestro código, ya que existen plataformas como GitHub, donde podemos subir nuestro código y compartirlo con el mundo, en este caso GitHub ciertamente es que permite a otras personas ver nuestro código y descargarlo, pero el único problema es que se necesitan programas como Git y un compilador de C++ para poder ejecutar el programa, pero no es necesario recurrir a soluciones como estas, ya que existen compañías como [Replit](www.replit.com) que nos permiten ejecutar nuestro código sin necesidad de instalar nada, en este caso podemos ver nuestro código y ejecutarlo en el mismo sitio.
 
 Escanear el código QR para acceder al programa
 
